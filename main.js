@@ -102,7 +102,7 @@ function dibujarBrillos() {
 }
 
 // Mensaje
-let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia #03 💌";
+let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia , me haces muy feliz , eres lo mejor que tengo, Felices 9 meses , vamos por mas #03 💌";
 let mostrarMensaje = false;
 let mensajeAnim = {
   texto: "",
