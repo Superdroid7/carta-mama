@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carta de Amor Animada</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+  <canvas id="cartaCanvas" width="500" height="400"></canvas>
+  <div class="papel3d" id="papel3d"><span id="papelMsg"></span></div>
+  <div class="ui-overlay">
+    <div class="subtitle" id="subtitle">Haz click en la carta para abrirla</div>
+    <button class="close-btn" id="closeBtn" title="Cerrar carta" aria-label="Cerrar carta">
+      &times;
+      <span class="tooltip" id="closeTooltip">Cerrar</span>
+    </button>
+    <button class="download-btn" id="downloadBtn" title="Descargar carta" aria-label="Descargar carta">
+      <svg width="22" height="22" viewBox="0 0 22 22"><path fill="#b5838d" d="M11 2v12.59l4.3-4.3 1.42 1.42L11 18.41l-5.71-5.7 1.41-1.42L11 14.59V2h2z"/><rect fill="none" width="22" height="22"/></svg>
+    </button>
+    <div id="downloadMsg" class="download-msg">¡Descargado!</div>
+  </div>
+  <div class="firma">Con cariño, Benjamin</div>
+  <audio id="openSound" src="Under The Sun - Everet Almond.mp3" preload="auto"></audio>
+  <audio id="closeSound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae6b5.mp3" preload="auto"></audio>
+  <audio id="bgMusic" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b7b8b6e2.mp3" preload="auto" loop></audio>
+  <script src="main.js"></script>
+</body>
+</html>
