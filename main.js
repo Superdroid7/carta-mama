@@ -255,7 +255,7 @@ function dibujarCarta() {
     ctx.textAlign = "left";
     ctx.fillText("Para:", carta.x + 18, carta.y + 32);
     ctx.font = "normal 1rem 'Pacifico', cursive";
-    ctx.fillText(para ? para : "-----", carta.x + 70, carta.y + 32);
+    ctx.fillText(para ? para : "La mujer mas hermosa", carta.x + 70, carta.y + 32);
     ctx.restore();
   }
 
