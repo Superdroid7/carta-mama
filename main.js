@@ -111,7 +111,7 @@ function getQueryParams() {
 }
 
 let para = "mamá"; // valor por defecto
-let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia , me haces muy feliz , eres lo mejor que tengo, Felices 9 meses , vamos por mas #03 💌";
+let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia , me haces muy feliz , eres lo mejor que tengo 💌";
 let mostrarMensaje = false;
 let mensajeAnim = {
   texto: "",
@@ -119,6 +119,7 @@ let mensajeAnim = {
   timer: null,
   velocidad: 28 // ms por letra
 };
+let loadingText = "Para ti mamá"; // valor por defecto para loading
 
 // --- Papel 3D DOM y animación ---
 const papel3d = document.getElementById('papel3d');
@@ -704,8 +705,11 @@ function animarBounceInicial() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // --- NUEVO: Leer parámetros de consulta ---
+  // --- Leer parámetros de consulta una sola vez ---
   const params = getQueryParams();
+  if (params.para) {
+    para = params.para;
+  }
   if (params.mensaje) {
     mensaje = params.mensaje;
   }
@@ -713,9 +717,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const firmaEl = document.querySelector('.firma');
     if (firmaEl) firmaEl.textContent = params.firma;
   }
-  if (params.para) {
-    para = params.para;
+  // Loading personalizado: si hay ?loading=... úsalo, si no, si hay para, usa "Para ti X"
+  if (params.loading) {
+    loadingText = params.loading;
+  } else if (params.para) {
+    loadingText = `Para ti ${params.para}`;
+  } else {
+    loadingText = "Para ti mamá";
   }
+
   setCarta3D(0);
   gsap.set('.firma', { opacity: 0.7, y: 18 });
   positionPapel3d();
@@ -735,9 +745,8 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   cartaCanvas.style.visibility = 'hidden';
 
-  // Animación de tipeo para "Para ti mamá" (personalizable)
+  // Animación de tipeo para loadingText (personalizable)
   const loadingSpan = loading ? loading.querySelector('span') : null;
-  const loadingText = params.para ? `Para ti ${params.para}` : "Para ti mamá";
   if (loadingSpan) {
     loadingSpan.textContent = "";
     let idx = 0;
@@ -807,46 +816,3 @@ document.addEventListener('keydown', (e) => {
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 }
-window.addEventListener('DOMContentLoaded', () => {
-  setCarta3D(0);
-  gsap.set('.firma', { opacity: 0.7, y: 18 });
-  positionPapel3d();
-  if (isMobile()) {
-    document.getElementById('subtitle').textContent = "Toca la carta para abrirla";
-  }
-  // Mostrar loading y ocultar carta hasta terminar
-  const loading = document.getElementById('loadingMama');
-  const cartaCanvas = document.getElementById('cartaCanvas');
-  // Reinicia animación del corazón SVG
-  const heartPath = document.getElementById('loadingHeartPath');
-  if (heartPath) {
-    heartPath.style.animation = 'none';
-    // Forzar reflow para reiniciar animación
-    void heartPath.offsetWidth;
-    heartPath.style.animation = '';
-  }
-  cartaCanvas.style.visibility = 'hidden';
-
-  // Animación de tipeo para "Para ti mamá"
-  const loadingSpan = loading ? loading.querySelector('span') : null;
-  const loadingText = "Para ti mamá";
-  if (loadingSpan) {
-    loadingSpan.textContent = "";
-    let idx = 0;
-    const typeInterval = 70;
-    const typeWriter = setInterval(() => {
-      loadingSpan.textContent = loadingText.slice(0, idx + 1);
-      idx++;
-      if (idx === loadingText.length) clearInterval(typeWriter);
-    }, typeInterval);
-  }
-
-  setTimeout(() => {
-    if (loading) loading.classList.add('hide');
-    cartaCanvas.style.visibility = '';
-    animarBounceInicial(); // <-- Inicia rebote llamativo al mostrar la carta
-  }, 2400); // antes 1700
-});
-
-// --- Asegura que el rebote empiece siempre, incluso si la animación de entrada no se ejecuta ---
-animarBounceSobre();
