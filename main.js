@@ -110,7 +110,7 @@ function getQueryParams() {
   return params;
 }
 
-// Mensaje
+let para = "mamá"; // valor por defecto
 let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia , me haces muy feliz , eres lo mejor que tengo, Felices 9 meses , vamos por mas #03 💌";
 let mostrarMensaje = false;
 let mensajeAnim = {
@@ -254,8 +254,7 @@ function dibujarCarta() {
     ctx.textAlign = "left";
     ctx.fillText("Para:", carta.x + 18, carta.y + 32);
     ctx.font = "normal 1rem 'Pacifico', cursive";
-    ctx.fillText("-----", carta.x + 70, carta.y + 32);
-    // Se elimina "De:", "Zero" y el corazón inferior
+    ctx.fillText(para ? para : "-----", carta.x + 70, carta.y + 32);
     ctx.restore();
   }
 
@@ -714,6 +713,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const firmaEl = document.querySelector('.firma');
     if (firmaEl) firmaEl.textContent = params.firma;
   }
+  if (params.para) {
+    para = params.para;
+  }
   setCarta3D(0);
   gsap.set('.firma', { opacity: 0.7, y: 18 });
   positionPapel3d();
@@ -733,9 +735,9 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   cartaCanvas.style.visibility = 'hidden';
 
-  // Animación de tipeo para "Para ti mamá"
+  // Animación de tipeo para "Para ti mamá" (personalizable)
   const loadingSpan = loading ? loading.querySelector('span') : null;
-  const loadingText = "Para ti mamá";
+  const loadingText = params.para ? `Para ti ${params.para}` : "Para ti mamá";
   if (loadingSpan) {
     loadingSpan.textContent = "";
     let idx = 0;
