@@ -134,10 +134,17 @@ function updatePapelMsg() {
 function positionPapel3d() {
   const rect = canvas.getBoundingClientRect();
   // Centrar el papel3d sobre el canvas y hacerlo más grande
-  papel3d.style.left = (rect.left + window.scrollX + rect.width / 2) + "px";
-  papel3d.style.top = (rect.top + window.scrollY + rect.height / 2) + "px";
-  papel3d.style.width = rect.width * 0.8 + "px";
-  papel3d.style.height = rect.height * 0.6 + "px";
+  if (window.innerWidth <= 600) {
+    papel3d.style.left = (rect.left + window.scrollX + rect.width / 2) + "px";
+    papel3d.style.top = (rect.top + window.scrollY + rect.height / 2) + "px";
+    papel3d.style.width = (window.innerWidth * 0.95) + "px";
+    papel3d.style.height = (rect.height * 0.7) + "px";
+  } else {
+    papel3d.style.left = (rect.left + window.scrollX + rect.width / 2) + "px";
+    papel3d.style.top = (rect.top + window.scrollY + rect.height / 2) + "px";
+    papel3d.style.width = rect.width * 0.8 + "px";
+    papel3d.style.height = rect.height * 0.6 + "px";
+  }
 }
 window.addEventListener('resize', positionPapel3d);
 
