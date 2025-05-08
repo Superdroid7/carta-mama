@@ -717,11 +717,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const firmaEl = document.querySelector('.firma');
     if (firmaEl) firmaEl.textContent = params.firma;
   }
-  // Loading personalizado: si hay ?loading=... úsalo, si no, si hay para, usa "Para ti X"
+  // Loading SOLO usa el parámetro loading, si no, SIEMPRE el valor por defecto
   if (params.loading) {
     loadingText = params.loading;
-  } else if (params.para) {
-    loadingText = `Para ti ${params.para}`;
   } else {
     loadingText = "Para ti mamá";
   }
