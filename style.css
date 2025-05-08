@@ -5,7 +5,7 @@ html, body {
   padding: 0;
   width: 100vw;
   height: 100vh;
-  background: #f8e1e7;
+  background: #000000;
   overflow: hidden;
 }
 body {
@@ -15,7 +15,7 @@ body {
   min-height: 100vh;
   transition: filter 0.6s cubic-bezier(.77,0,.18,1);
   position: relative;
-  background: linear-gradient(135deg, #cf6581 0%, #e7a2d5 100%);
+  background: none !important; /* El fondo lo maneja .bg-fade */
   transition: background 1.2s cubic-bezier(.77,0,.18,1), filter 0.6s cubic-bezier(.77,0,.18,1);
 }
 body::before {
@@ -34,7 +34,7 @@ body.bg-open {
   background: linear-gradient(120deg, #0e0d0d 0%, #231c1f 60%, #1e1b1c 100%);
 }
 #cartaCanvas {
-  background: radial-gradient(circle at 60% 40%, #161616 60%, #000000 100%);
+  background: radial-gradient(circle at 60% 40%, #fff 60%, #fff 100%);
   display: block;
   cursor: pointer;
   box-shadow: 0 16px 48px 0 rgba(230,57,70,0.22), 0 0 0 12px #fffbe8, 0 2px 32px 0 rgba(181,131,141,0.10), 0 0 32px 0 #ffd70033;
@@ -59,9 +59,10 @@ body.bg-open {
   transition: transform 0.7s cubic-bezier(.77,0,.18,1), filter 0.3s, box-shadow 0.3s;
 }
 #cartaCanvas:hover {
-  filter: brightness(1.04) drop-shadow(0 0 12px #ffd70055);
+  /* Desactivado para usar animación JS */
+  /* filter: brightness(1.04) drop-shadow(0 0 120px #00000055);
   transform: scale(1.025) rotate(-1deg);
-  box-shadow: 0 12px 48px 0 rgba(230,57,70,0.18), 0 0 0 8px #fffbe8;
+  box-shadow: 0 12px 48px 0 rgba(230,57,70,0.18), 0 0 0 8px #fffbe8; */
 }
 #bgCanvas {
   position: fixed;
@@ -85,7 +86,7 @@ body.bg-open {
 .subtitle {
   font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem;
-  color: #b5838d;
+  color: #242222;
   margin-bottom: 2.5rem;
   letter-spacing: 1px;
   background: rgba(255,255,255,0.7);
@@ -325,4 +326,96 @@ body.bg-open {
 @keyframes reflejoPapel {
   0%, 100% { opacity: 0.7; transform: translateY(0) scaleX(1); }
   50% { opacity: 1; transform: translateY(10px) scaleX(1.08); }
+}
+
+/* Fondo animado para transición suave */
+.bg-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+  opacity: 1;
+  transition: opacity 1.2s cubic-bezier(.77,0,.18,1);
+  will-change: opacity;
+}
+.bg-fade.bg-fade-dark {
+  background: linear-gradient(120deg, #0e0d0d 0%, #231c1f 60%, #1e1b1c 100%);
+  opacity: 1;
+  transition: opacity 1.2s cubic-bezier(.77,0,.18,1);
+}
+
+/* Loading centrado y animado */
+.loading-mama {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(255,255,255,0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Pacifico', cursive;
+  font-size: 2.5rem;
+  color: #b5838d;
+  letter-spacing: 2px;
+  transition: opacity 0.7s cubic-bezier(.77,0,.18,1), visibility 0.7s;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.loading-mama.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(.77,0,.18,1), visibility 0.7s;
+}
+.loading-mama span {
+  animation: loadingMamaPulse 1.6s infinite alternate;
+  font-family: 'Montserrat', 'Pacifico', cursive, monospace;
+  min-width: 13ch;
+  letter-spacing: 2px;
+  white-space: pre;
+  border-right: 2.5px solid #e63946;
+  /* caret parpadeante */
+  animation:
+    loadingMamaPulse 1.6s infinite alternate,
+    loadingTypeCaret 0.7s steps(1) infinite;
+}
+@keyframes loadingTypeCaret {
+  0%, 100% { border-color: #e63946; }
+  50% { border-color: transparent; }
+}
+#loadingHeart {
+  display: block;
+  margin: 0 auto;
+  width: 64px;
+  height: 64px;
+  stroke: #e63946;
+  /* Para animación de trazo */
+}
+#loadingHeartPath {
+  stroke-dasharray: 180;
+  stroke-dashoffset: 180;
+  animation: heartDraw 1.3s cubic-bezier(.77,0,.18,1) forwards, heartPulse 1.2s 1.3s infinite alternate;
+}
+@keyframes heartDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes heartPulse {
+  0% {
+    stroke: #e63946;
+    filter: drop-shadow(0 0 0px #ffd70055);
+  }
+  100% {
+    stroke: #b5838d;
+    filter: drop-shadow(0 0 12px #ffd70099);
+  }
+}
+@keyframes loadingMamaPulse {
+  0% { color: #b5838d; text-shadow: 0 2px 16px #ffd70044; }
+  100% { color: #e63946; text-shadow: 0 4px 32px #ffd70099; }
 }

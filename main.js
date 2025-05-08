@@ -101,6 +101,15 @@ function dibujarBrillos() {
   }
 }
 
+// Utilidad para leer parámetros de consulta
+function getQueryParams() {
+  const params = {};
+  window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+    params[decodeURIComponent(key)] = decodeURIComponent(value.replace(/\+/g, " "));
+  });
+  return params;
+}
+
 // Mensaje
 let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia , me haces muy feliz , eres lo mejor que tengo, Felices 9 meses , vamos por mas #03 💌";
 let mostrarMensaje = false;
@@ -224,10 +233,10 @@ function dibujarCarta() {
   }
   ctx.restore();
 
-  // Cuerpo de la carta con borde dorado
+  // Cuerpo de la carta con borde blanco
   ctx.save();
   ctx.fillStyle = "#fff";
-  ctx.strokeStyle = "#ffd700";
+  ctx.strokeStyle = "#fff"; // <-- borde blanco
   ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.rect(carta.x, carta.y, carta.w, carta.h);
@@ -245,20 +254,8 @@ function dibujarCarta() {
     ctx.textAlign = "left";
     ctx.fillText("Para:", carta.x + 18, carta.y + 32);
     ctx.font = "normal 1rem 'Pacifico', cursive";
-    ctx.fillText("Gaby", carta.x + 70, carta.y + 32);
-    // "De:"
-    ctx.font = "bold 1.05rem 'Montserrat', sans-serif";
-    ctx.textAlign = "right";
-    // Ajustar la posición Y para que esté más abajo y alineado
-    const deY = carta.y + carta.h - 20; // antes era -18
-    ctx.fillText("De:", carta.x + carta.w - 300, deY);
-    ctx.font = "normal 1rem 'Pacifico', cursive";
-    ctx.fillText("Benjamin", carta.x + carta.w - 200, deY);
-    // Corazón al lado de "Zero"
-    ctx.save();
-    ctx.globalAlpha = 0.7;
-    dibujarCorazon(carta.x + carta.w - 28, deY - 8, 18, 1, 0, "#e63946");
-    ctx.restore();
+    ctx.fillText("-----", carta.x + 70, carta.y + 32);
+    // Se elimina "De:", "Zero" y el corazón inferior
     ctx.restore();
   }
 
@@ -309,6 +306,8 @@ function dibujarCarta() {
   ctx.restore();
 
   // Líneas decorativas
+  // Elimina la rayita inferior
+  /*
   ctx.save();
   ctx.strokeStyle = "#f9c6d1";
   ctx.lineWidth = 2;
@@ -317,6 +316,7 @@ function dibujarCarta() {
   ctx.lineTo(carta.x+carta.w-20, carta.y+carta.h-20);
   ctx.stroke();
   ctx.restore();
+  */
 
   // Sello de corazón
   ctx.save();
@@ -499,6 +499,9 @@ function dibujarConfeti() {
   }
 }
 
+// Referencia al fondo animado
+const bgFade = document.getElementById('bgFade');
+
 // Agrandar carta y blur fondo al abrir
 function abrirCarta() {
   if (carta.opening) return;
@@ -512,8 +515,13 @@ function abrirCarta() {
   bgMusic.volume = 0.45;
   bgMusic.play().catch(()=>{});
   document.body.classList.add('blurred');
-  document.body.classList.add('bg-open');
+  // Fondo animado: transición a negro
+  if (bgFade) bgFade.classList.add('bg-fade-dark');
+  // Elimina la clase bg-open del body (ya no se usa para fondo)
+  document.body.classList.remove('bg-open');
   canvas.classList.add('enlarged');
+  // Cambia el fondo del canvas a negro
+  canvas.style.background = "radial-gradient(circle at 60% 40%, #161616 60%, #000 100%)";
   lanzarConfeti();
   destello.active = true;
   destello.t = 0;
@@ -555,8 +563,13 @@ function cerrarCarta() {
   document.getElementById('closeBtn').classList.remove('visible');
   document.getElementById('downloadBtn').classList.remove('visible');
   document.body.classList.remove('blurred');
+  // Fondo animado: transición a rosado
+  if (bgFade) bgFade.classList.remove('bg-fade-dark');
+  // Elimina la clase bg-open del body (ya no se usa para fondo)
   document.body.classList.remove('bg-open');
   canvas.classList.remove('enlarged');
+  // Restaura el fondo del canvas a blanco
+  canvas.style.background = "radial-gradient(circle at 60% 40%, #fff 60%, #fff 100%)";
   mostrarMensaje = false;
   if (mensajeAnim.timer) clearInterval(mensajeAnim.timer);
   const closeSound = document.getElementById('closeSound');
@@ -626,6 +639,32 @@ resizeCanvas();
 canvas.addEventListener('click', abrirCarta);
 document.getElementById('closeBtn').addEventListener('click', cerrarCarta);
 
+// Animación hover sobre la carta
+canvas.addEventListener('mouseenter', () => {
+  if (!carta.opening && carta.openProgress === 0) {
+    gsap.to(canvas, {
+      scale: 1.08,
+      rotate: -4,
+      boxShadow: "0 24px 64px 0 rgba(230,57,70,0.22), 0 0 0 16px #fffbe8",
+      filter: "brightness(1.08) drop-shadow(0 0 24px #ffd70055)",
+      duration: 0.32,
+      ease: "power2.out"
+    });
+  }
+});
+canvas.addEventListener('mouseleave', () => {
+  if (!carta.opening && carta.openProgress === 0) {
+    gsap.to(canvas, {
+      scale: 1,
+      rotate: 0,
+      boxShadow: "0 16px 48px 0 rgba(230,57,70,0.22), 0 0 0 12px #fffbe8, 0 2px 32px 0 rgba(181,131,141,0.10), 0 0 32px 0 #ffd70033",
+      filter: "drop-shadow(0 8px 32px #b5838d44)",
+      duration: 0.32,
+      ease: "power2.in"
+    });
+  }
+});
+
 animar();
 
 // --- Animación de rebote para llamar la atención ---
@@ -645,6 +684,78 @@ function animarBounceSobre() {
     gsap.to("#cartaCanvas", { y: 0, duration: 0.2 });
   }
 }
+
+// --- Animación de rebote inicial llamativa ---
+function animarBounceInicial() {
+  gsap.fromTo(
+    "#cartaCanvas",
+    { y: -24, scale: 1 },
+    {
+      y: 0,
+      scale: 1.08,
+      duration: 0.45,
+      ease: "bounce.out",
+      repeat: 2,
+      yoyo: true,
+      onComplete: () => {
+        animarBounceSobre(); // Luego sigue el rebote suave normal
+      }
+    }
+  );
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  // --- NUEVO: Leer parámetros de consulta ---
+  const params = getQueryParams();
+  if (params.mensaje) {
+    mensaje = params.mensaje;
+  }
+  if (params.firma) {
+    const firmaEl = document.querySelector('.firma');
+    if (firmaEl) firmaEl.textContent = params.firma;
+  }
+  setCarta3D(0);
+  gsap.set('.firma', { opacity: 0.7, y: 18 });
+  positionPapel3d();
+  if (isMobile()) {
+    document.getElementById('subtitle').textContent = "Toca la carta para abrirla";
+  }
+  // Mostrar loading y ocultar carta hasta terminar
+  const loading = document.getElementById('loadingMama');
+  const cartaCanvas = document.getElementById('cartaCanvas');
+  // Reinicia animación del corazón SVG
+  const heartPath = document.getElementById('loadingHeartPath');
+  if (heartPath) {
+    heartPath.style.animation = 'none';
+    // Forzar reflow para reiniciar animación
+    void heartPath.offsetWidth;
+    heartPath.style.animation = '';
+  }
+  cartaCanvas.style.visibility = 'hidden';
+
+  // Animación de tipeo para "Para ti mamá"
+  const loadingSpan = loading ? loading.querySelector('span') : null;
+  const loadingText = "Para ti mamá";
+  if (loadingSpan) {
+    loadingSpan.textContent = "";
+    let idx = 0;
+    const typeInterval = 70;
+    const typeWriter = setInterval(() => {
+      loadingSpan.textContent = loadingText.slice(0, idx + 1);
+      idx++;
+      if (idx === loadingText.length) clearInterval(typeWriter);
+    }, typeInterval);
+  }
+
+  setTimeout(() => {
+    if (loading) loading.classList.add('hide');
+    cartaCanvas.style.visibility = '';
+    animarBounceInicial(); // <-- Inicia rebote llamativo al mostrar la carta
+  }, 2400); // antes 1700
+});
+
+// --- Asegura que el rebote empiece siempre, incluso si la animación de entrada no se ejecuta ---
+animarBounceSobre();
 
 // --- 3D carta: animación de rotación y profundidad ---
 function setCarta3D(progress) {
@@ -701,6 +812,38 @@ window.addEventListener('DOMContentLoaded', () => {
   if (isMobile()) {
     document.getElementById('subtitle').textContent = "Toca la carta para abrirla";
   }
+  // Mostrar loading y ocultar carta hasta terminar
+  const loading = document.getElementById('loadingMama');
+  const cartaCanvas = document.getElementById('cartaCanvas');
+  // Reinicia animación del corazón SVG
+  const heartPath = document.getElementById('loadingHeartPath');
+  if (heartPath) {
+    heartPath.style.animation = 'none';
+    // Forzar reflow para reiniciar animación
+    void heartPath.offsetWidth;
+    heartPath.style.animation = '';
+  }
+  cartaCanvas.style.visibility = 'hidden';
+
+  // Animación de tipeo para "Para ti mamá"
+  const loadingSpan = loading ? loading.querySelector('span') : null;
+  const loadingText = "Para ti mamá";
+  if (loadingSpan) {
+    loadingSpan.textContent = "";
+    let idx = 0;
+    const typeInterval = 70;
+    const typeWriter = setInterval(() => {
+      loadingSpan.textContent = loadingText.slice(0, idx + 1);
+      idx++;
+      if (idx === loadingText.length) clearInterval(typeWriter);
+    }, typeInterval);
+  }
+
+  setTimeout(() => {
+    if (loading) loading.classList.add('hide');
+    cartaCanvas.style.visibility = '';
+    animarBounceInicial(); // <-- Inicia rebote llamativo al mostrar la carta
+  }, 2400); // antes 1700
 });
 
 // --- Asegura que el rebote empiece siempre, incluso si la animación de entrada no se ejecuta ---
