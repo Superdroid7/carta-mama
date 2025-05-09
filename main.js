@@ -111,13 +111,13 @@ function getQueryParams() {
 }
 
 let para = "mamá"; // valor por defecto
-let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia , me haces muy feliz , eres lo mejor que tengo 💌";
+let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia , or ser como eres y por esforzarte cada dia , or ser como eres y por esforzarte cada dia , me haces muy feliz , eres lo mejor que tengo  gracias por ser como eres y por esforzarte cada dia , me haces muy feliz , eres lo mejor que tengo💌";
 let mostrarMensaje = false;
 let mensajeAnim = {
   texto: "",
   idx: 0,
   timer: null,
-  velocidad: 28 // ms por letra
+  velocidad: 70 // ms por letra (antes 28)
 };
 let loadingText = "Para ti mamá"; // valor por defecto para loading
 
@@ -132,19 +132,13 @@ function updatePapelMsg() {
 
 // Posiciona y escala el papel3d centrado sobre el canvas
 function positionPapel3d() {
-  const rect = canvas.getBoundingClientRect();
-  // Centrar el papel3d sobre el canvas y hacerlo más grande
-  if (window.innerWidth <= 600) {
-    papel3d.style.left = (rect.left + window.scrollX + rect.width / 2) + "px";
-    papel3d.style.top = (rect.top + window.scrollY + rect.height / 2) + "px";
-    papel3d.style.width = (window.innerWidth * 0.95) + "px";
-    papel3d.style.height = (rect.height * 0.7) + "px";
-  } else {
-    papel3d.style.left = (rect.left + window.scrollX + rect.width / 2) + "px";
-    papel3d.style.top = (rect.top + window.scrollY + rect.height / 2) + "px";
-    papel3d.style.width = rect.width * 0.8 + "px";
-    papel3d.style.height = rect.height * 0.6 + "px";
-  }
+  // Centrar absolutamente en la ventana, vertical y horizontal
+  papel3d.style.position = "fixed";
+  papel3d.style.left = "50%";
+  papel3d.style.top = "50%";
+  // SOLO modificar scale/rotate, NO el translate
+  // NO poner width ni height aquí, deja que el CSS lo controle
+  papel3d.style.transform = "translate(-50%, -50%)";
 }
 window.addEventListener('resize', positionPapel3d);
 
@@ -356,34 +350,68 @@ function dibujarCarta() {
     ctx.strokeStyle = "#b5838d";
     ctx.lineWidth = 1.5;
 
-    // Calcular alto del papel según el mensaje
-    const paperX = carta.x+18;
-    const paperW = carta.w-36;
-    const minPaperH = carta.h-60;
-    const maxPaperH = carta.h*1.2;
-    ctx.font = "bold 30px 'Pacifico', cursive";
-    const lineHeight = 36;
-    const words = mensaje.split(' ');
+    // Área máxima para el papel (deja margen)
+    const paperMargin = 18;
+    const paperX = carta.x + paperMargin;
+    const paperY = carta.y + paperMargin;
+    const paperW = carta.w - paperMargin * 2;
+    const paperH = carta.h - paperMargin * 2;
+
+    // Determinar el tamaño de fuente ideal para que quepa todo el texto
+    let fontSize = 30;
+    let minFontSize = 13;
+    let lineHeight = fontSize * 1.2;
     let lines = [];
-    let currentLine = "";
-    for (let i = 0; i < words.length; i++) {
-      let testLine = currentLine + (currentLine ? " " : "") + words[i];
-      let testWidth = ctx.measureText(testLine).width;
-      if (testWidth > paperW-24 && currentLine) {
-        lines.push(currentLine);
-        currentLine = words[i];
-      } else {
-        currentLine = testLine;
+    let words = mensaje.split(' ');
+
+    // Función para calcular líneas con un tamaño de fuente dado
+    function getLines(fontSizeTry) {
+      ctx.font = `bold ${fontSizeTry}px 'Pacifico', cursive`;
+      let lh = fontSizeTry * 1.2;
+      let tempLines = [];
+      let currentLine = "";
+      for (let i = 0; i < words.length; i++) {
+        let testLine = currentLine + (currentLine ? " " : "") + words[i];
+        let testWidth = ctx.measureText(testLine).width;
+        if (testWidth > paperW - 24 && currentLine) {
+          tempLines.push(currentLine);
+          currentLine = words[i];
+        } else {
+          currentLine = testLine;
+        }
       }
+      if (currentLine) tempLines.push(currentLine);
+      return { tempLines, lh };
     }
-    if (currentLine) lines.push(currentLine);
-    let paperH = Math.max(minPaperH, Math.min(maxPaperH, lines.length * lineHeight + 40));
-    let paperY = carta.y+30 + (1-slide)*40 - (paperH-minPaperH)/2;
+
+    // Reduce el tamaño de fuente hasta que quepa todo el texto
+    while (true) {
+      let { tempLines, lh } = getLines(fontSize);
+      if (tempLines.length * lh + 40 <= paperH || fontSize <= minFontSize) {
+        lines = tempLines;
+        lineHeight = lh;
+        break;
+      }
+      fontSize -= 2;
+    }
+
+    // Centrar verticalmente el papel
+    let realPaperH = lines.length * lineHeight + 40;
+    let offsetY = paperY + (paperH - realPaperH) / 2;
 
     ctx.beginPath();
-    ctx.rect(paperX, paperY, paperW, paperH);
+    ctx.rect(paperX, offsetY, paperW, realPaperH);
     ctx.fill();
     ctx.stroke();
+
+    // Dibuja el texto línea por línea centrado
+    ctx.font = `bold ${fontSize}px 'Pacifico', cursive`;
+    ctx.fillStyle = "#b5838d";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    for (let i = 0; i < lines.length; i++) {
+      ctx.fillText(lines[i], paperX + paperW / 2, offsetY + 20 + i * lineHeight);
+    }
     ctx.restore();
   }
 
@@ -519,7 +547,7 @@ function abrirCarta() {
   // --- Música de fondo ---
   const bgMusic = document.getElementById('bgMusic');
   bgMusic.currentTime = 0;
-  bgMusic.volume = 0.45;
+  bgMusic.volume = 0.18; // antes 0.45
   bgMusic.play().catch(()=>{});
   document.body.classList.add('blurred');
   // Fondo animado: transición a negro

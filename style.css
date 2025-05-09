@@ -152,29 +152,6 @@ body.bg-open {
 .close-btn:active {
   transform: scale(0.97) rotate(0deg);
 }
-@media (max-width: 600px) {
-  #cartaCanvas { 
-    width: 130vw !important; 
-    height: 100vw !important; 
-    max-width: 130vw !important;
-    max-height: 100vw !important;
-  }
-  .close-btn { 
-    top: 2.2rem; 
-    right: 2.5rem; 
-  }
-  .subtitle { font-size: 1.13rem; }
-  .download-btn { 
-    bottom: 2.2rem; 
-    right: 2.5rem; 
-  }
-  .download-msg { 
-    bottom: 7.5rem; 
-    right: 2.7rem; 
-    font-size: 1.13rem; 
-  }
-  .firma { font-size: 1.13rem; left: 4vw; bottom: 1.5vh; }
-}
 .firma {
   position: absolute;
   left: 2vw;
@@ -187,9 +164,6 @@ body.bg-open {
   user-select: none;
   z-index: 30;
   letter-spacing: 1px;
-}
-@media (max-width: 600px) {
-  .firma { font-size: 0.9rem; left: 2vw; bottom: 1vh; }
 }
 .download-btn {
   position: absolute;
@@ -223,9 +197,6 @@ body.bg-open {
 .download-btn:active {
   transform: scale(0.97) rotate(0deg);
 }
-@media (max-width: 600px) {
-  .download-btn { bottom: 1rem; right: 1rem; }
-}
 .download-msg {
   position: absolute;
   bottom: 6.5rem;
@@ -242,39 +213,43 @@ body.bg-open {
   z-index: 30;
   transition: opacity 0.4s;
 }
-@media (max-width: 600px) {
-  .download-msg { bottom: 4.5rem; right: 1.2rem; font-size: 1rem; }
-}
 .papel3d {
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 50%;
-  width: 80%;
-  height: 60%;
-  min-width: 280px;
-  min-height: 180px;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 650px;
+  min-width: 320px;
+  height: auto;
+  min-height: 220px;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 20;
   background: #fffbe8;
   border-radius: 18px;
   box-shadow: 0 24px 64px 0 rgba(181,131,141,0.22), 0 0 0 12px #ffd70055, 0 0 64px #fffbe8cc;
   border: 3.5px solid #ffd700;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-family: 'Pacifico', cursive;
   font-size: 2rem;
   color: #b5838d;
   text-align: center;
   opacity: 0;
   pointer-events: none;
-  z-index: 10;
+  z-index: 20; /* Asegura que esté sobre el canvas */
   transform: translate(-50%, -50%) perspective(1200px) scaleX(0.7) scaleY(0.1) rotateX(80deg);
   transition: box-shadow 0.4s, background 0.4s, filter 0.4s;
   will-change: transform, opacity, filter;
-  padding: 2.2rem 3.2rem;
+  padding: 3.5rem 2.8rem;
   background: linear-gradient(120deg, #fffbe8 80%, #f9e6f0 100%);
   perspective: 1200px;
   backface-visibility: hidden;
   animation: papelGlow 2.5s ease-in-out infinite;
+  box-sizing: border-box;
 }
 .papel3d.visible {
   pointer-events: auto;
@@ -305,19 +280,6 @@ body.bg-open {
   padding: 0;
   margin: 0;
   text-shadow: 0 2px 8px #fffbe8cc, 0 1px 0 #ffd70044;
-}
-@media (max-width: 600px) {
-  .papel3d {
-    font-size: 1.25rem;
-    min-width: 150px;
-    min-height: 90px;
-    padding: 1.1rem 1.1rem;
-    width: 90vw !important;
-    height: 60vw !important;
-  }
-  .papel3d span {
-    font-size: 1.25rem;
-  }
 }
 @keyframes papelGlow {
   0%, 100% { box-shadow: 0 12px 48px 0 rgba(181,131,141,0.22), 0 0 0 6px #ffd70055, 0 0 32px #fffbe8cc; }
