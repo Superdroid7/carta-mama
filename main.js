@@ -111,7 +111,7 @@ function getQueryParams() {
 }
 
 let para = "mamá"; // valor por defecto
-let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia, eres lo mejor que tengo  gracias por ser como eres y por esforzarte cada dia 💌";
+let mensaje = "¡Te amo mucho , gracias por ser como eres y por esforzarte cada dia, eres lo mejor que tengo  gracias por ser como eres y por esforzarte cada dia 💌. ATT Samuel";
 let mostrarMensaje = false;
 let mensajeAnim = {
   texto: "",
